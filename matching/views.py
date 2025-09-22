@@ -1,3 +1,4 @@
 from django.shortcuts import render
 
-# Create your views here.
+def matching_view(request):
+    return render(request, "matching.html") 
