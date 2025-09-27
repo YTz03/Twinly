@@ -74,7 +74,7 @@ class User(AbstractBaseUser):
     objects = UserManager()
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['password', 'first_name', 'last_name', 'date_of_birth', 'relationship_status']
+    REQUIRED_FIELDS = ['first_name', 'last_name', 'date_of_birth']  # password is handled separately by Django
 
     def __str__(self):
         return self.email

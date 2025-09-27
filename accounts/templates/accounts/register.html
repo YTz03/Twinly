@@ -1,56 +1,169 @@
 {% extends "base.html" %}
-
-{% block title %}Register{% endblock %}
+{% block title %}Register – Twinly{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card shadow-lg p-4">
-                <h2 class="mb-4 text-center">Create Your Account</h2>
+<div class="row justify-content-center">
+  <div class="col-12 col-md-8 col-lg-6">
+    <div class="card shadow-sm">
+      <div class="card-body p-4">
+        <h1 class="h4 mb-4 text-center">Create your account</h1>
 
-                <form method="post" novalidate>
-                    {% csrf_token %}
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            {{ form.first_name.label_tag }}
-                            {{ form.first_name }}
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            {{ form.last_name.label_tag }}
-                            {{ form.last_name }}
-                        </div>
-                    </div>
+        {# Form-level (non-field) errors #}
+        {% if form and form.non_field_errors %}
+          <div class="alert alert-danger" role="alert">
+            {% for err in form.non_field_errors %}{{ err }}<br>{% endfor %}
+          </div>
+        {% endif %}
 
-                    <div class="mb-3">
-                        {{ form.username.label_tag }}
-                        {{ form.username }}
-                    </div>
+        <form method="post" novalidate>
+          {% csrf_token %}
 
-                    <div class="mb-3">
-                        {{ form.email.label_tag }}
-                        {{ form.email }}
-                    </div>
+          <!-- First name -->
+          <div class="mb-3">
+            <label class="form-label" for="id_first_name">First name</label>
+            <input
+              type="text"
+              name="first_name"
+              id="id_first_name"
+              value="{% if form %}{{ form.first_name.value|default_if_none:'' }}{% else %}{{ request.POST.first_name }}{% endif %}"
+              class="form-control {% if form and form.first_name.errors %}is-invalid{% endif %}">
+            {% if form and form.first_name.errors %}
+              {% for err in form.first_name.errors %}
+                <div class="invalid-feedback">{{ err }}</div>
+              {% endfor %}
+            {% endif %}
+          </div>
 
-                    <div class="mb-3">
-                        {{ form.password1.label_tag }}
-                        {{ form.password1 }}
-                    </div>
+          <!-- Last name -->
+          <div class="mb-3">
+            <label class="form-label" for="id_last_name">Last name</label>
+            <input
+              type="text"
+              name="last_name"
+              id="id_last_name"
+              value="{% if form %}{{ form.last_name.value|default_if_none:'' }}{% else %}{{ request.POST.last_name }}{% endif %}"
+              class="form-control {% if form and form.last_name.errors %}is-invalid{% endif %}">
+            {% if form and form.last_name.errors %}
+              {% for err in form.last_name.errors %}
+                <div class="invalid-feedback">{{ err }}</div>
+              {% endfor %}
+            {% endif %}
+          </div>
 
-                    <div class="mb-3">
-                        {{ form.password2.label_tag }}
-                        {{ form.password2 }}
-                    </div>
+          <!-- Email -->
+          <div class="mb-3">
+            <label class="form-label" for="id_email">Email</label>
+            <input
+              type="email"
+              name="email"
+              id="id_email"
+              value="{% if form %}{{ form.email.value|default_if_none:'' }}{% else %}{{ request.POST.email }}{% endif %}"
+              class="form-control {% if form and form.email.errors %}is-invalid{% endif %}">
+            {% if form and form.email.errors %}
+              {% for err in form.email.errors %}
+                <div class="invalid-feedback">{{ err }}</div>
+              {% endfor %}
+            {% endif %}
+          </div>
 
-                    <button type="submit" class="btn btn-success w-100">Register</button>
-                </form>
+          <!-- Date of birth -->
+          <div class="mb-3">
+            <label class="form-label" for="id_date_of_birth">Date of birth</label>
+            <input
+              type="date"
+              name="date_of_birth"
+              id="id_date_of_birth"
+              value="{% if form %}{{ form.date_of_birth.value|default_if_none:'' }}{% else %}{{ request.POST.date_of_birth }}{% endif %}"
+              class="form-control {% if form and form.date_of_birth.errors %}is-invalid{% endif %}">
+            {% if form and form.date_of_birth.errors %}
+              {% for err in form.date_of_birth.errors %}
+                <div class="invalid-feedback">{{ err }}</div>
+              {% endfor %}
+            {% endif %}
+          </div>
 
-                <p class="mt-3 text-center">
-                    Already have an account?
-                    <a href="{% url 'login' %}">Login here</a>.
-                </p>
-            </div>
-        </div>
+          <!-- Relationship status -->
+          <div class="mb-3">
+            <label class="form-label" for="id_relationship_status">Relationship status</label>
+
+            {# If you pass a Django form with a select widget, render it to keep your Choices #}
+            {% if form and form.relationship_status %}
+              <div class="{% if form.relationship_status.errors %}is-invalid{% endif %}">
+                {{ form.relationship_status }}
+              </div>
+              {% if form.relationship_status.errors %}
+                {% for err in form.relationship_status.errors %}
+                  <div class="invalid-feedback d-block">{{ err }}</div>
+                {% endfor %}
+              {% endif %}
+            {% else %}
+              {# Plain fallback (adjust options to match your model choices) #}
+              <select name="relationship_status" id="id_relationship_status" class="form-select">
+                <option value="">Select…</option>
+                <option value="single">Single</option>
+                <option value="in_relationship">In a relationship</option>
+                <option value="married">Married</option>
+                <option value="complicated">It’s complicated</option>
+              </select>
+            {% endif %}
+          </div>
+
+          <!-- Partner email (optional) -->
+          <div class="mb-3">
+            <label class="form-label" for="id_partner">Partner email (optional)</label>
+            <input
+              type="email"
+              name="partner"
+              id="id_partner"
+              value="{% if form %}{{ form.partner.value|default_if_none:'' }}{% else %}{{ request.POST.partner }}{% endif %}"
+              class="form-control {% if form and form.partner and form.partner.errors %}is-invalid{% endif %}">
+            {% if form and form.partner and form.partner.errors %}
+              {% for err in form.partner.errors %}
+                <div class="invalid-feedback">{{ err }}</div>
+              {% endfor %}
+            {% endif %}
+          </div>
+
+          <!-- Password -->
+          <div class="mb-3">
+            <label class="form-label" for="id_password1">Password</label>
+            <input
+              type="password"
+              name="password1"
+              id="id_password1"
+              class="form-control {% if form and form.password1.errors %}is-invalid{% endif %}">
+            {% if form and form.password1.errors %}
+              {% for err in form.password1.errors %}
+                <div class="invalid-feedback">{{ err }}</div>
+              {% endfor %}
+            {% endif %}
+          </div>
+
+          <!-- Confirm password -->
+          <div class="mb-4">
+            <label class="form-label" for="id_password2">Confirm password</label>
+            <input
+              type="password"
+              name="password2"
+              id="id_password2"
+              class="form-control {% if form and form.password2.errors %}is-invalid{% endif %}">
+            {% if form and form.password2.errors %}
+              {% for err in form.password2.errors %}
+                <div class="invalid-feedback">{{ err }}</div>
+              {% endfor %}
+            {% endif %}
+          </div>
+
+          <button class="btn btn-primary w-100" type="submit">Create account</button>
+        </form>
+
+        <hr class="my-4">
+        <p class="mb-0 text-center">
+          Already have an account?
+          <a href="{% url 'login' %}">Sign in</a>
+        </p>
+      </div>
     </div>
+  </div>
 </div>
 {% endblock %}

@@ -1,41 +1,69 @@
 {% extends "base.html" %}
-
-{% block title %}Login{% endblock %}
+{% block title %}Login – Twinly{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-center align-items-center vh-100">
-  <div class="card shadow-lg p-4" style="max-width: 400px; width: 100%;">
-    <div class="card-body">
-      <h3 class="card-title text-center mb-4">Welcome Back</h3>
-      <form method="POST" action="{% url 'login' %}">
-        {% csrf_token %}
-        <div class="mb-3">
-          <label for="username" class="form-label">Username</label>
-          <input 
-            type="text" 
-            class="form-control" 
-            id="username" 
-            name="username" 
-            placeholder="Enter your username" 
-            required>
-        </div>
-        <div class="mb-3">
-          <label for="password" class="form-label">Password</label>
-          <input 
-            type="password" 
-            class="form-control" 
-            id="password" 
-            name="password" 
-            placeholder="Enter your password" 
-            required>
-        </div>
-        <button type="submit" class="btn btn-primary w-100">Login</button>
-      </form>
-      <div class="text-center mt-3">
-        <small class="text-muted">
-          Don't have an account? 
-          <a href="{% url 'register' %}">Sign up</a>
-        </small>
+<div class="row justify-content-center">
+  <div class="col-12 col-md-6 col-lg-5">
+    <div class="card shadow-sm">
+      <div class="card-body p-4">
+        <h1 class="h4 mb-4 text-center">Sign in</h1>
+
+        {# Form-level (non-field) errors #}
+        {% if form and form.non_field_errors %}
+          <div class="alert alert-danger" role="alert">
+            {% for err in form.non_field_errors %}{{ err }}<br>{% endfor %}
+          </div>
+        {% endif %}
+
+        <form method="post" novalidate>
+          {% csrf_token %}
+
+          <!-- Email (username in Django auth) -->
+          <div class="mb-3">
+            <label class="form-label" for="id_username">Email</label>
+            <input
+              type="email"
+              name="username"
+              id="id_username"
+              value="{% if form %}{{ form.username.value|default_if_none:'' }}{% else %}{{ request.POST.username }}{% endif %}"
+              class="form-control {% if form and form.username.errors %}is-invalid{% endif %}">
+            {% if form and form.username.errors %}
+              {% for err in form.username.errors %}
+                <div class="invalid-feedback">{{ err }}</div>
+              {% endfor %}
+            {% endif %}
+          </div>
+
+          <!-- Password -->
+          <div class="mb-3">
+            <label class="form-label" for="id_password">Password</label>
+            <input
+              type="password"
+              name="password"
+              id="id_password"
+              class="form-control {% if form and form.password.errors %}is-invalid{% endif %}">
+            {% if form and form.password.errors %}
+              {% for err in form.password.errors %}
+                <div class="invalid-feedback">{{ err }}</div>
+              {% endfor %}
+            {% endif %}
+          </div>
+
+          <!-- Remember me (optional) -->
+          <div class="mb-3 form-check">
+            <input class="form-check-input" type="checkbox" name="remember" id="remember"
+                   {% if request.POST.remember %}checked{% endif %}>
+            <label class="form-check-label" for="remember">Keep me signed in</label>
+          </div>
+
+          <button class="btn btn-primary w-100" type="submit">Sign in</button>
+        </form>
+
+        <hr class="my-4">
+        <p class="mb-0 text-center">
+          Don’t have an account?
+          <a href="{% url 'register' %}">Create one</a>
+        </p>
       </div>
     </div>
   </div>
