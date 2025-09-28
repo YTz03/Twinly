@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block title %}Profiles{% endblock %}
+{% block content %}
+<div class="container">
+  <h1>All Profiles</h1>
+  <ul>
+    {% for u in users %}
+      <li><a href="{% url 'profile_detail' u.id %}">{{ u.get_full_name }}</a></li>
+    {% endfor %}
+  </ul>
+</div>
+{% endblock %}

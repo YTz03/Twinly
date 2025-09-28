@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block title %}{{ profile_user.first_name }}'s profile{% endblock %}
+
+{% block content %}
+<div class="container">
+  <h1>{{ profile_user.get_full_name }}</h1>
+  <p>Email: {{ profile_user.email }}</p>
+  <p>Date of birth: {{ profile_user.date_of_birth }}</p>
+  <p>Relationship status: {{ profile_user.relationship_status }}</p>
+</div>
+{% endblock %}

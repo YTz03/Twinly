@@ -26,7 +26,9 @@
               name="first_name"
               id="id_first_name"
               value="{% if form %}{{ form.first_name.value|default_if_none:'' }}{% else %}{{ request.POST.first_name }}{% endif %}"
-              class="form-control {% if form and form.first_name.errors %}is-invalid{% endif %}">
+              class="form-control {% if form and form.first_name.errors %}is-invalid{% endif %}"
+              pattern="[^\s]+"
+              title="First name cannot contain spaces">
             {% if form and form.first_name.errors %}
               {% for err in form.first_name.errors %}
                 <div class="invalid-feedback">{{ err }}</div>
@@ -42,7 +44,9 @@
               name="last_name"
               id="id_last_name"
               value="{% if form %}{{ form.last_name.value|default_if_none:'' }}{% else %}{{ request.POST.last_name }}{% endif %}"
-              class="form-control {% if form and form.last_name.errors %}is-invalid{% endif %}">
+              class="form-control {% if form and form.last_name.errors %}is-invalid{% endif %}"
+              pattern="[^\s]+"
+              title="Last name cannot contain spaces">
             {% if form and form.last_name.errors %}
               {% for err in form.last_name.errors %}
                 <div class="invalid-feedback">{{ err }}</div>
@@ -58,7 +62,9 @@
               name="email"
               id="id_email"
               value="{% if form %}{{ form.email.value|default_if_none:'' }}{% else %}{{ request.POST.email }}{% endif %}"
-              class="form-control {% if form and form.email.errors %}is-invalid{% endif %}">
+              class="form-control {% if form and form.email.errors %}is-invalid{% endif %}"
+              pattern="[^\s]+"
+              title="Email cannot contain spaces">
             {% if form and form.email.errors %}
               {% for err in form.email.errors %}
                 <div class="invalid-feedback">{{ err }}</div>
@@ -108,21 +114,7 @@
             {% endif %}
           </div>
 
-          <!-- Partner email (optional) -->
-          <div class="mb-3">
-            <label class="form-label" for="id_partner">Partner email (optional)</label>
-            <input
-              type="email"
-              name="partner"
-              id="id_partner"
-              value="{% if form %}{{ form.partner.value|default_if_none:'' }}{% else %}{{ request.POST.partner }}{% endif %}"
-              class="form-control {% if form and form.partner and form.partner.errors %}is-invalid{% endif %}">
-            {% if form and form.partner and form.partner.errors %}
-              {% for err in form.partner.errors %}
-                <div class="invalid-feedback">{{ err }}</div>
-              {% endfor %}
-            {% endif %}
-          </div>
+          <!-- Partner removed from registration form -->
 
           <!-- Password -->
           <div class="mb-3">
@@ -131,7 +123,9 @@
               type="password"
               name="password1"
               id="id_password1"
-              class="form-control {% if form and form.password1.errors %}is-invalid{% endif %}">
+              class="form-control {% if form and form.password1.errors %}is-invalid{% endif %}"
+              pattern="[^\s]+"
+              title="Password cannot contain spaces">
             {% if form and form.password1.errors %}
               {% for err in form.password1.errors %}
                 <div class="invalid-feedback">{{ err }}</div>
@@ -146,7 +140,9 @@
               type="password"
               name="password2"
               id="id_password2"
-              class="form-control {% if form and form.password2.errors %}is-invalid{% endif %}">
+              class="form-control {% if form and form.password2.errors %}is-invalid{% endif %}"
+              pattern="[^\s]+"
+              title="Password cannot contain spaces">
             {% if form and form.password2.errors %}
               {% for err in form.password2.errors %}
                 <div class="invalid-feedback">{{ err }}</div>
@@ -156,6 +152,47 @@
 
           <button class="btn btn-primary w-100" type="submit">Create account</button>
         </form>
+
+          <script>
+            // Prevent users from typing or pasting spaces into first/last name fields.
+            (function() {
+              function setupNoSpaceField(id) {
+                const el = document.getElementById(id);
+                if (!el) return;
+
+                // Block the space key
+                el.addEventListener('keydown', function(e) {
+                  if (e.key === ' ') {
+                    e.preventDefault();
+                  }
+                });
+
+                // Remove any whitespace on input (covers paste)
+                el.addEventListener('input', function() {
+                  const cleaned = this.value.replace(/\s+/g, '');
+                  if (this.value !== cleaned) {
+                    // set the cleaned value and move caret to the end
+                    this.value = cleaned;
+                    try { this.setSelectionRange(cleaned.length, cleaned.length); } catch (err) {}
+                  }
+                  // keep the browser validity in sync
+                  if (/\s/.test(this.value)) {
+                    this.setCustomValidity('Names cannot contain spaces.');
+                  } else {
+                    this.setCustomValidity('');
+                  }
+                });
+              }
+
+              document.addEventListener('DOMContentLoaded', function() {
+                setupNoSpaceField('id_first_name');
+                setupNoSpaceField('id_last_name');
+                setupNoSpaceField('id_email');
+                setupNoSpaceField('id_password1');
+                setupNoSpaceField('id_password2');
+              });
+            })();
+          </script>
 
         <hr class="my-4">
         <p class="mb-0 text-center">

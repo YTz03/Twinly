@@ -28,11 +28,11 @@ class UserManager(BaseUserManager):
         except ValidationError as e:
             raise ValueError(f"Password validation error: {e}")
 
-        if len(first_name) < 2 or len(first_name) > 15:
-            raise ValueError("First name must be between 2 and 15 characters long")
+        if len(first_name) < 2 or len(first_name) > 15 or ' ' in first_name:
+            raise ValueError("First name must be between 2 and 15 characters long and cannot contain spaces")
 
-        if len(last_name) < 2 or len(last_name) > 15:
-            raise ValueError("Last name must be between 2 and 15 characters long")
+        if len(last_name) < 2 or len(last_name) > 15 or ' ' in last_name:
+            raise ValueError("Last name must be between 2 and 15 characters long and cannot contain spaces")
 
         if date_of_birth is None or date_of_birth == '':
             raise ValueError("Date of birth is required")
